@@ -1,2 +1,3 @@
-# TBS_wL_Metrics
-Water Level Metrics supporting Floodpulse Project Studies
+# Floodpulse Project: Water Level Metrics
+
+Scripts to create water level metrics for the floodpulse project!
