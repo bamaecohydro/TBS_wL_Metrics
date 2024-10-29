@@ -6,7 +6,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Setup workspace environment----------------------------------------------------
+#1.0 Setup workspace environment------------------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #clear memory
 remove(list=ls())
@@ -16,7 +16,7 @@ library(tidyverse)
 library(readxl)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Create function to download data ----------------------------------------------
+#2.0 Create function to download data ------------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 download_fun <- function(wetland_id){
   #load data of interest
@@ -46,7 +46,7 @@ download_fun <- function(wetland_id){
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Create function to estimate annual metrics ------------------------------------
+#3.0 Create function to estimate annual metrics --------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #start function
 metrics_fun <- function(wetland){
@@ -135,8 +135,10 @@ df %>%
     facet_wrap(wetland_id~., scales='free') + 
     geom_vline(xintercept = sampling_events$date, lty=2, alpha = .7, col="steelblue4", lwd=1.1) + 
     theme_bw()
-    
   
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#4.0 Apply function to estimate inundation metrics ---------------------------------
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Apply metrics_fun to wetlands of interest
 output <- lapply(X= wetlands, FUN=metrics_fun) %>% bind_rows()
 output
