@@ -118,8 +118,24 @@ wetlands <- c("HS1-1", "HS2-1", "HS3-1",
               "IT1-6", "TBS26", "IT3-1", 
               "FP1-2", "FP2-1", "FP3-1")
 
-#Estimate metrics for "IT1-3"
+#Define sampling events
+sampling_events <- c("4/25/2023", "6/6/2023", "8/1/2023", 
+                     "10/2/2023", "12/4/2023", "2/16/2024", 
+                     "4/14/2024") %>% 
+  as_tibble() %>% rename(date = value) %>%  
+  mutate(date = mdy(date))
+
+#donwload data
 df <- lapply(X = wetlands, FUN = download_fun) %>% bind_rows()
+  
+#Plot for funzies
+df %>% 
+  ggplot(aes(x=day, y=wL, group = wetland_id)) + 
+    geom_line() +
+    facet_wrap(wetland_id~., scales='free') + 
+    geom_vline(xintercept = sampling_events$date, lty=2, alpha = .7, col="steelblue4", lwd=1.1) + 
+    theme_bw()
+    
   
 #Apply metrics_fun to wetlands of interest
 output <- lapply(X= wetlands, FUN=metrics_fun) %>% bind_rows()
