@@ -6,7 +6,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Setup workspace environment----------------------------------------------------
+#1.0 Setup workspace environment----------------------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #clear memory
 remove(list=ls())
@@ -15,46 +15,17 @@ remove(list=ls())
 library(tidyverse)
 library(readxl)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Create function to download data ----------------------------------------------
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-download_fun <- function(wetland_id){
-  #load data of interest
-  df <- read_xlsx('data//waterLevel.xlsx', sheet = wetland_id, skip=5, col_types = c("numeric"))
-  
-  #list number of cols
-  ncols <- ncol(df)
-  
-  #Create vector for col types
-  col_types <- c("date", rep("numeric", ncols-1))
-  
-  #load data of interest (but control coltypes this time)
-  df <- read_xlsx('data//waterLevel.xlsx', sheet = wetland_id, skip=5, col_types = col_types)
-  
-  #tidy data and convert to mean daily
-  df <- df %>% 
-    #tidy data
-    select(datetime, water_level_cm_corrected) %>% 
-    rename(wL = water_level_cm_corrected) %>% 
-    drop_na() %>% 
-    #Convert to daily mean data
-    mutate(day = date(datetime)) %>% 
-    group_by(day) %>% 
-    summarise(wL = mean(wL, na.rm=T)) %>% 
-    mutate(wetland_id = wetland_id)
-  df  
-}
+#read waterLevel data
+df <- read_csv("data/waterLevel.csv")
 
 #Create vector of wetlands of interest
 wetlands <- c("HS1-1", "HS2-1", "HS3-1", 
               "IT1-6", "TBS26", "IT3-1", 
               "FP1-2", "FP2-1", "FP3-1")
 
-#download data
-df <- lapply(X = wetlands, FUN = download_fun) %>% bind_rows()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Create function to estimate annual metrics ------------------------------------
+#2.0 Create function to estimate annual metrics ------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #start function
 metrics_fun <- function(wetland){
@@ -119,13 +90,13 @@ metrics_fun <- function(wetland){
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#Apply function to estimate inundation metrics ---------------------------------
+#3.0 Apply function to estimate inundation metrics ---------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Apply metrics_fun to wetlands of interest
 output <- lapply(X= wetlands, FUN=metrics_fun) %>% bind_rows()
 output
 
 #write to folder
-write_csv(output, "output//DNF_annual_wL_metrics.csv")
+write_csv(output, "output//DNF_seasonal_wL_metrics.csv")
   
 
