@@ -6,7 +6,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#1.0 Setup workspace environment------------------------------------------------
+#Setup workspace environment----------------------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #clear memory
 remove(list=ls())
@@ -16,7 +16,7 @@ library(tidyverse)
 library(readxl)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#2.0 Create function to download data ------------------------------------------
+#Create function to download data ----------------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 download_fun <- function(wetland_id){
   #load data of interest
@@ -45,39 +45,16 @@ download_fun <- function(wetland_id){
   df  
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#3.0 Apply function and wrangle data -------------------------------------------
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Create vector of wetlands of interest
 wetlands <- c("HS1-1", "HS2-1", "HS3-1", 
               "IT1-6", "TBS26", "IT3-1", 
               "FP1-2", "FP2-1", "FP3-1")
 
-#Define sampling events
-sampling_events <- c("4/25/2023", "6/6/2023", "2/16/2024", 
-                     "8/1/2023", "10/2/2023", "12/4/2023") %>% 
-  as_tibble() %>% rename(date = value) %>%  
-  mutate(date = mdy(date))
-
-#donwload data
+#download data
 df <- lapply(X = wetlands, FUN = download_fun) %>% bind_rows()
 
-#Clip to period interest
-df <- df %>% filter(day >= mdy("4/1/2023")) %>% filter(day <= mdy("3/1/2024"))
-
-#Plot for funzies
-df %>% 
-  ggplot(aes(x=day, y=wL, group = wetland_id)) + 
-  geom_line() +
-  facet_wrap(wetland_id~., scales='free') + 
-  geom_vline(xintercept = sampling_events$date[1:3], lty=2, alpha = .7, col="steelblue4", lwd=1.1) + 
-  geom_vline(xintercept = sampling_events$date[4:6], lty=2, alpha = .7, col="darkorange4", lwd=1.1) + 
-  theme_bw()
-
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#4.0 Create function to estimate annual metrics --------------------------------
+#Create function to estimate annual metrics ------------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #start function
 metrics_fun <- function(wetland){
@@ -142,7 +119,7 @@ metrics_fun <- function(wetland){
 }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#5.0 Apply function to estimate inundation metrics ---------------------------------
+#Apply function to estimate inundation metrics ---------------------------------
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #Apply metrics_fun to wetlands of interest
 output <- lapply(X= wetlands, FUN=metrics_fun) %>% bind_rows()
